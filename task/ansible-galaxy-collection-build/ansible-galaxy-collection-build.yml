@@ -46,6 +46,9 @@ spec:
       description: Force overwriting an existing role or collection.
       type: string
       default: "false"
+  results:
+    - name: collection-bundle
+      description: The filename of the built collection tarball
   steps:
 
     - name: ansible-galaxy-collection-build
@@ -80,4 +83,7 @@ spec:
           FORCE_FLAG="--force"
         fi
 
-        ansible-galaxy collection build $(params.VERBOSITY) $IGNORE_CERTS_FLAG $TOKEN_FLAG $SERVER_FLAG $TIMEOUT_FLAG $FORCE_FLAG --output-path $(params.OUTPUT_PATH) $(params.PATH)
+        ansible-galaxy collection build $(params.VERBOSITY) $IGNORE_CERTS_FLAG $TOKEN_FLAG $SERVER_FLAG $TIMEOUT_FLAG $FORCE_FLAG --output-path $(params.OUTPUT_PATH) $(params.PATH) | tee build.log
+
+        BUNDLE_FILENAME=$(sed -n 's/.* at .*\/\([^/]*\.tar\.gz\)$/\1/p' build.log | tail -1)
+        echo -n "$BUNDLE_FILENAME" > $(results.collection-bundle.path)

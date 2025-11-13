@@ -10,6 +10,10 @@ spec:
     description: Molecule scenario to run.
     default: "default"
     type: string
+  - name: collection-bundle
+    description: Collection bundle to install into the molecule environment
+    default: ""
+    type: string
   # Future params.. image, set k8s env vars,
   # results:
   # - description: The precise commit SHA that was fetched by this Task.
@@ -45,6 +49,11 @@ spec:
       # Molecule does not automatically install python dependencies, so we need to do it here
       if [ -f "molecule/$(params.molecule-scenario)/requirements.txt" ] ; then
         python3 -m pip install -r "molecule/$(params.molecule-scenario)/requirements.txt"
+      fi
+
+      # If a collection bundle is provided, install it into the molecule environment
+      if [ -n "$(params.collection-bundle)" ] ; then
+        ansible-galaxy collection install -f "$(params.collection-bundle)"
       fi
 
       # Run Molecule
