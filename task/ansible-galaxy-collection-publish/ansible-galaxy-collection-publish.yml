@@ -14,8 +14,8 @@ spec:
       optional: true
       readOnly: true
   params:
-    - name: COLLECTION_PATH
-      description: Path to the collection tarball to publish.
+    - name: COLLECTION_BUNDLE
+      description: The filename of the built collection tarball.
       type: string
     - name: VERBOSITY
       description: ansible-galaxy output verbosity flag
@@ -99,4 +99,4 @@ spec:
           IMPORT_TIMEOUT_FLAG="--import-timeout $(params.IMPORT_TIMEOUT)"
         fi
 
-        ansible-galaxy collection publish $(params.VERBOSITY) $IGNORE_CERTS_FLAG $TOKEN_FLAG $SERVER_FLAG $TIMEOUT_FLAG $NO_WAIT_FLAG $IMPORT_TIMEOUT_FLAG $(params.COLLECTION_PATH)
+        ansible-galaxy collection publish $(params.VERBOSITY) $IGNORE_CERTS_FLAG $TOKEN_FLAG $SERVER_FLAG $TIMEOUT_FLAG $NO_WAIT_FLAG $IMPORT_TIMEOUT_FLAG $(params.COLLECTION_BUNDLE)
