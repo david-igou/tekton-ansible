@@ -30,7 +30,7 @@ spec:
       type: string
       default: ""
     - name: SERVER
-      description: The Galaxy API server URL.
+      description: The Galaxy API server URL. Defaults to https://galaxy.ansible.com, if using Red Hat Automationhub ensure to include full /api/
       type: string
       default: ""
     - name: TIMEOUT
