@@ -9,6 +9,10 @@ spec:
   workspaces:
     - name: source
       description: The source workspace where the collection is located.
+    - name: galaxy-credentials
+      description: The galaxy credentials workspace. can provide "token" and "server" secret keys
+      optional: true
+      readOnly: true
   params:
     - name: COLLECTION_PATH
       description: Path to the collection tarball to publish.
@@ -46,7 +50,6 @@ spec:
       type: string
       default: ""
   steps:
-
     - name: ansible-galaxy-collection-publish
       workingDir: $(workspaces.source.path)
       image: $(params.CONTAINER_IMAGE)
@@ -59,14 +62,26 @@ spec:
           IGNORE_CERTS_FLAG="-c"
         fi
 
+        # Prefer the param TOKEN, fallback to credential workspace
         TOKEN_FLAG=""
         if [ -n "$(params.TOKEN)" ]; then
           TOKEN_FLAG="--token $(params.TOKEN)"
+        elif [ "$(workspaces.galaxy-credentials.bound)" = "true" ] && [ -f "$(workspaces.galaxy-credentials.path)/token" ]; then
+          TOKEN_VALUE="$(cat "$(workspaces.galaxy-credentials.path)/token")"
+          if [ -n "$TOKEN_VALUE" ]; then
+            TOKEN_FLAG="--token $TOKEN_VALUE"
+          fi
         fi
 
+        # Prefer the param SERVER, fallback to credential workspace
         SERVER_FLAG=""
         if [ -n "$(params.SERVER)" ]; then
           SERVER_FLAG="--server $(params.SERVER)"
+        elif [ "$(workspaces.galaxy-credentials.bound)" = "true" ] && [ -f "$(workspaces.galaxy-credentials.path)/server" ]; then
+          SERVER_VALUE="$(cat "$(workspaces.galaxy-credentials.path)/server")"
+          if [ -n "$SERVER_VALUE" ]; then
+            SERVER_FLAG="--server $SERVER_VALUE"
+          fi
         fi
 
         TIMEOUT_FLAG=""
